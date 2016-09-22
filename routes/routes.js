@@ -51,11 +51,26 @@ module.exports = function makeRouterWithSockets (io) {
     });
   });
 
+
   // create a new tweet
   router.post('/tweets', function(req, res, next){
-    var newTweet = tweetBank.add(req.body.name, req.body.content);
-    io.sockets.emit('new_tweet', newTweet);
-    res.redirect('/');
+    client.query('SELECT id, name FROM users WHERE name = $1', [req.body.name], function (err, data) {
+      var userExists = data.rows.length > 0;
+
+      if (userExists) {
+        client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [data.rows[0].id, req.body.content], function (err, data) {
+          io.sockets.emit('new_tweet', data.rows);
+          res.redirect('/');
+        });
+      } else {
+        client.query('INSERT INTO users (name) VALUES ($1) RETURNING *', [req.body.name], function (err, otherData) {
+          client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [otherData.rows[0].id, req.body.content], function (err, otherOtherData){
+            io.sockets.emit('new_tweet', otherOtherData.rows);
+            res.redirect('/');
+          });
+        });
+      }
+    });
   });
 
   // // replaced this hard-coded route with general static routing in app.js
