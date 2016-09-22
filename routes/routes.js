@@ -1,18 +1,16 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
-var tweetBank = require('../tweetBank');
 var client = require('../db/index.js')
 
 module.exports = function makeRouterWithSockets (io) {
 
   // a reusable function
   function respondWithAllTweets (req, res, next){
-    client.query('SELECT * FROM tweets', function (err, result) {
+    client.query('SELECT name, tweets.userid, pictureurl, content FROM users INNER JOIN tweets ON tweets.userid = users.id;', function (err, result) {
       if (err) return next(err); // pass errors to Express
       var tweets = result.rows;
-      console.log('THIS IS WHAT TWEETS LOOK LIKE', tweets)
-      res.render('index', { title: 'Twitter.js', tweets: tweets, showForm: true });
+      res.render('index.html', { title: 'Twitter.js', tweets: tweets, showForm: true });
     });
   }
 
@@ -22,21 +20,34 @@ module.exports = function makeRouterWithSockets (io) {
 
   // single-user page
   router.get('/users/:username', function(req, res, next){
-    var tweetsForName = tweetBank.find({ name: req.params.username });
-    res.render('index', {
-      title: 'Twitter.js',
-      tweets: tweetsForName,
-      showForm: true,
-      username: req.params.username
+    client.query('SELECT name, tweets.id, pictureurl, content FROM users INNER JOIN tweets ON tweets.userid = users.id;', function (err, result) {
+      var tweets = result.rows;
+
+      var tweetsForName = tweets.filter(function(tweet) {
+        return tweet.name === req.params.username;
+      });
+
+      res.render('users.html', {
+        tweets: tweetsForName,
+        showForm: true,
+        username: req.params.username
+      });
     });
   });
 
   // single-tweet page
   router.get('/tweets/:id', function(req, res, next){
-    var tweetsWithThatId = tweetBank.find({ id: Number(req.params.id) });
-    res.render('index', {
-      title: 'Twitter.js',
-      tweets: tweetsWithThatId // an array of only one element ;-)
+    client.query('SELECT name, tweets.id, pictureurl, content FROM users INNER JOIN tweets ON tweets.userid = users.id;', function (err, result) {
+
+      var tweets = result.rows;
+
+      var tweetsWithThatId = tweets.filter(function(tweet){
+        return tweet.id == req.params.id;
+      });
+
+      res.render('tweet.html', {
+        tweets: tweetsWithThatId
+      });
     });
   });
 

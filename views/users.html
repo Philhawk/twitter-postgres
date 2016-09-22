@@ -3,13 +3,10 @@
 {% block content %}
 
   <div class="page-header">
-    <h1>Welcome to Twitter.js!</h1>
+    <h1>Welcome to My Page!</h1>
+
   </div>
   <div class="row">
-    <!-- <div class="col-md-3">
-      <img src="https://pbs.twimg.com/profile_images/2450268678/olxp11gnt09no2y2wpsh_normal.jpeg"><br>
-      <b>Your Name</b><br>
-      100 followers -->
 
       {% if showForm %}
         <form action="/tweets" method="POST">
@@ -22,17 +19,16 @@
           <input type="submit" value="Submit" />
         </form>
       {% endif %}
-    </div>
-
-
       <!-- display tweets here -->
       <div id="tweets">
       {% for tweet in tweets | reverse %}
         <div class="tweetbox">
+          <a href="/tweets/{{ tweet.id }}">
             <img src="{{ tweet.pictureurl }}">
             <div class="content">
-              <p class="by"><a href="/users/{{ tweet.name }}">{{tweet.name}}</a></p>
-              <p>{{tweet.content}}<a href="/tweets/{{ tweet.id }}"></a></p>
+                <p>{{tweet.name}}</p>
+                <p>{{tweet.content}}</p>
+              </a>
             </div>
         </div>
       {% endfor %}

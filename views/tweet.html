@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+  <div class="page-header">
+  </div>
+  <div class="row">
+      <!-- display tweets here -->
+      <div id="tweets">
+      {% for tweet in tweets %}
+        <div class="tweetbox">
+            <img src="{{ tweet.pictureurl}}">
+            <div class="content">
+                <p>{{tweet.name}}</p>
+                <p>{{tweet.content}}</p>
+            </div>
+        </div>
+      {% endfor %}
+      </div>
+  </div>
+
+{% endblock %}
