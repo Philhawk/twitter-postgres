@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 var morgan = require('morgan');
 var nunjucks = require('nunjucks');
-var makesRouter = require('./routes');
+var makesRouter = require('./routes/routes.js');
 var fs = require('fs');
 var path = require('path');
 var mime = require('mime');
@@ -24,8 +24,8 @@ app.use(bodyParser.json()); // would be for AJAX requests
 
 
 // start the server
-var server = app.listen(1337, function(){
-  console.log('listening on port 1337');
+var server = app.listen(3000, function(){
+  console.log('listening on port 3000');
 });
 var io = socketio.listen(server);
 
